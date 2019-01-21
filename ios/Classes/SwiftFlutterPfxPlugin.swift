@@ -10,8 +10,12 @@ public class SwiftFlutterPfxPlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) throws {
-    try executeFunc(call: call, result: result)
+  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+      do {
+            try executeFunc(call: call, result: result)
+        }  catch {
+            result(FlutterError(code: "UNKNOWN_ERROR", message: "Un error desconocido ha ocurrido", details: error.localizedDescription ))
+        }
   }
 
   private func executeFunc(call: FlutterMethodCall, result:FlutterResult) throws {
