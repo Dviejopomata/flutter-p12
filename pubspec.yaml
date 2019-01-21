@@ -1,8 +1,8 @@
 name: flutter_pfx
-description: A new flutter plugin project.
-version: 0.0.1
-author:
-homepage:
+description: Plugin to read and sign with PKCS12 certificates. It allows to ask for a certificate in android.
+version: 0.0.2
+author: Dviejo <davidviejopomata@gmail.com>
+homepage: https://github.com/Dviejopomata/flutter-p12
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"

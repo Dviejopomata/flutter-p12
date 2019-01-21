@@ -1,43 +1,42 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert' show base64Encode;
 import 'dart:typed_data';
-import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
 class CustomException implements Exception {
-  String cause;
   CustomException(this.cause);
+  String cause;
 }
 
 class NoCertificateException implements Exception {
-  String cause;
   NoCertificateException(this.cause);
+  String cause;
 }
 
 class BadPasswordP12Exception implements Exception {
-  String cause;
   BadPasswordP12Exception(this.cause);
+  String cause;
 }
 
 class BadFormatP12Exception implements Exception {
-  String cause;
   BadFormatP12Exception(this.cause);
+  String cause;
 }
 
 class UnknownP12Exception implements Exception {
-  String cause;
   UnknownP12Exception(this.cause);
+  String cause;
 }
 
 class CertificateResult {
-  String b64;
   CertificateResult({this.b64});
+  String b64;
 }
 
 class SignWithP12Result {
-  String signature;
   SignWithP12Result({this.signature});
+  String signature;
 }
 
 class FlutterPfx {
@@ -51,7 +50,7 @@ class FlutterPfx {
 
   Future<CertificateResult> chooseCertificate() async {
     try {
-      Uint8List crtB64 = await channel.invokeMethod('getCertificate');
+      final Uint8List crtB64 = await channel.invokeMethod('getCertificate');
       return CertificateResult(b64: base64Encode(crtB64));
     } catch (e) {
       if (e is PlatformException) {
@@ -59,10 +58,10 @@ class FlutterPfx {
           case "NO_CERTIFICATE_CHOSEN":
             throw NoCertificateException(e.message);
           default:
-            throw e;
+            rethrow;
         }
       } else {
-        throw e;
+        rethrow;
       }
     }
   }
@@ -70,7 +69,7 @@ class FlutterPfx {
   Future<SignWithP12Result> signWithP12(
       {Uint8List p12, String password, Uint8List data}) async {
     try {
-      Uint8List signatureB64 = await channel.invokeMethod('signDataWithPfx', {
+      final Uint8List signatureB64 = await channel.invokeMethod('signDataWithPfx', {
         'pfx': p12,
         'password': password,
         'data': data,
@@ -84,37 +83,36 @@ class FlutterPfx {
             throw BadPasswordP12Exception(e.message);
           case "BAD_CERTIFICATE_FORMAT":
             throw BadFormatP12Exception(e.message);
-          case "BAD_CERTIFICATE_FORMAT":
+          case "CERTIFICATE_ERROR":
             throw UnknownP12Exception(e.message);
           default:
-            throw e;
+            rethrow;
         }
       } else {
-        throw e;
+        rethrow;
       }
     }
   }
 
   Future<CertificateResult> readP12({Uint8List p12, String password}) async {
     try {
-      Uint8List crtB64 = await channel
+      final Uint8List crtB64 = await channel
           .invokeMethod('readPfx', {'pfx': p12, 'password': password});
       return CertificateResult(b64: base64Encode(crtB64));
     } catch (e) {
       if (e is PlatformException) {
-        var ex = e;
-        switch (ex.code) {
+        switch (e.code) {
           case "BAD_PASSWORD":
-            throw BadPasswordP12Exception(ex.message);
+            throw BadPasswordP12Exception(e.message);
           case "BAD_CERTIFICATE_FORMAT":
-            throw BadFormatP12Exception(ex.message);
-          case "BAD_CERTIFICATE_FORMAT":
-            throw UnknownP12Exception(ex.message);
+            throw BadFormatP12Exception(e.message);
+          case "CERTIFICATE_ERROR":
+            throw UnknownP12Exception(e.message);
           default:
-            throw e;
+            rethrow;
         }
       } else {
-        throw e;
+        rethrow;
       }
     }
   }
