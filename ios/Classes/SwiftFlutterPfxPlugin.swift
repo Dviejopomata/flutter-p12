@@ -10,8 +10,8 @@ public class SwiftFlutterPfxPlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    executeFunc(call, result)
+  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) throws {
+    try executeFunc(call: call, result: result)
   }
 
   private func executeFunc(call: FlutterMethodCall, result:FlutterResult) throws {
