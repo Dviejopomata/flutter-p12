@@ -78,7 +78,9 @@ class FlutterPfxPlugin : MethodCallHandler {
     private fun SignData(activity: Activity, result: MethodChannel.Result, data: ByteArray) {
         chooseCertificate(activity)
                 .subscribe({
-                    result.success(SignWithPrivateKey(it.first, data))
+                    val signature = Base64.encodeToString(SignWithPrivateKey(it.first, data), Base64.DEFAULT)
+                    val crt = Base64.encodeToString(it.second.first().encoded, Base64.DEFAULT)
+                    result.success("$signature;$crt")
                 }, {
                     if (it is NoCertificateException) {
                         result.error("NO_CERTIFICATE_CHOSEN", it.message, null)
@@ -95,7 +97,7 @@ class FlutterPfxPlugin : MethodCallHandler {
                 .subscribe(
                         { r ->
 
-                            val map = r.second.elementAt(0)
+                            val map = r.second.first()
                             result.success(map.encoded)
                         },
                         {

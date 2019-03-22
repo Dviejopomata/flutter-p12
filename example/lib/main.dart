@@ -23,10 +23,12 @@ class _MyAppState extends State<MyApp> {
   TextEditingController _dataToSignController = new TextEditingController();
 
   SignWithP12Result _signature;
+  SignResult _signature2;
 
   @override
   void initState() {
     super.initState();
+    _dataToSignController.text = "Hello world";
   }
 
   @override
@@ -104,7 +106,24 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
               Text(
-                  "Signature is ${_signature != null ? _signature.signature : ""}")
+                  "Signature is ${_signature != null ? _signature.signature : ""}"),
+              RaisedButton(
+                child: Text("Sign data with any certificate"),
+                onPressed: () async {
+                  final signature = await FlutterPfx().sign(
+                    Uint8List.fromList(_dataToSignController.text.codeUnits),
+                  );
+                  print(signature.signature);
+                  print(signature.certificate);
+                  setState(() {
+                    _signature2 = signature;
+                  });
+                },
+              ),
+              Text(
+                  "Signature is ${_signature2 != null ? _signature2.signature : ""}"),
+              Text(
+                  "Certificate is ${_signature2 != null ? _signature2.certificate : ""}"),
             ],
           )),
     );
